@@ -86,7 +86,7 @@ git config --global http.version HTTP/1.1
 	exit 1
 }
 
-git checkout -B "$TARGET_BRANCH"
+git switch -c "$TARGET_BRANCH"
 
 git remote -v
 
