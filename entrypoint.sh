@@ -15,7 +15,7 @@ DESTINATION_REPOSITORY_USERNAME="${8}"
 TARGET_BRANCH="${9}"
 COMMIT_MESSAGE="${10}"
 TARGET_DIRECTORY="${11}"
-CREATE_TARGET_BRANCH_IF_NEEDED="${12}"
+REMOTE_NAME="${12}"
 
 if [ -z "$DESTINATION_REPOSITORY_USERNAME" ]
 then
@@ -67,7 +67,7 @@ git lfs install
 echo "[+] Cloning destination git repository $DESTINATION_REPOSITORY_NAME"
 
 git config --global --add safe.directory /github/workspace
-git config --global --add safe.directory $CLONE_DIR
+git config --global --add safe.directory "$CLONE_DIR"
 
 # Setup git
 git config --global user.email "$USER_EMAIL"
@@ -168,4 +168,8 @@ git diff-index --quiet HEAD || git commit --message "$COMMIT_MESSAGE"
 
 echo "[+] Pushing git commit"
 # --set-upstream: sets de branch when pushing to a branch that does not exist
+<<<<<<< HEAD
 git push "$GIT_CMD_REPOSITORY" --set-upstream "$TARGET_BRANCH"
+=======
+git push "https://$USER_NAME:$API_TOKEN_GITHUB@$GITHUB_SERVER/$DESTINATION_REPOSITORY_USERNAME/$DESTINATION_REPOSITORY_NAME.git" --set-upstream "$REMOTE_NAME" "$TARGET_BRANCH"
+>>>>>>> 389cdce (configure remote name)
