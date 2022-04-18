@@ -67,6 +67,7 @@ git lfs install
 echo "[+] Cloning destination git repository $DESTINATION_REPOSITORY_NAME"
 
 git config --global --add safe.directory /github/workspace
+git config --global --add safe.directory $CLONE_DIR
 
 # Setup git
 git config --global user.email "$USER_EMAIL"
