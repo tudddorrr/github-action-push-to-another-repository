@@ -88,6 +88,8 @@ git config --global http.version HTTP/1.1
 
 git checkout -B "$TARGET_BRANCH"
 
+git remote -v
+
 ls -la "$CLONE_DIR"
 
 TEMP_DIR=$(mktemp -d)
