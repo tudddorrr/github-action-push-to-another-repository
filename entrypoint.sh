@@ -86,8 +86,6 @@ git config --global http.version HTTP/1.1
 	exit 1
 }
 
-git checkout "$TARGET_BRANCH" 2>/dev/null || git checkout -b "$TARGET_BRANCH"
-
 git remote -v
 
 ls -la "$CLONE_DIR"
@@ -144,19 +142,7 @@ ORIGIN_COMMIT="https://$GITHUB_SERVER/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
 COMMIT_MESSAGE="${COMMIT_MESSAGE/ORIGIN_COMMIT/$ORIGIN_COMMIT}"
 COMMIT_MESSAGE="${COMMIT_MESSAGE/\$GITHUB_REF/$GITHUB_REF}"
 
-echo "[+] Set directory is safe ($CLONE_DIR)"
-# Related to https://github.com/cpina/github-action-push-to-another-repository/issues/64
-git config --global --add safe.directory "$CLONE_DIR"
-
-if [ "$CREATE_TARGET_BRANCH_IF_NEEDED" = "true" ]
-then
-    echo "[+] Switch to the TARGET_BRANCH"
-    # || true: if the $TARGET_BRANCH already existed in the destination repo:
-    # it is already the current branch and it cannot be switched to
-    # (it's not needed)
-    # If the branch did not exist: it switches (creating) the branch
-    git switch -c "$TARGET_BRANCH" || true
-fi
+git checkout "$TARGET_BRANCH" 2>/dev/null || git checkout -b "$TARGET_BRANCH"
 
 echo "[+] Adding git commit"
 git add .
