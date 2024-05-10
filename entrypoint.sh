@@ -65,6 +65,11 @@ git lfs install
 
 echo "[+] Cloning destination git repository $DESTINATION_REPOSITORY_NAME"
 
+echo "[+] Set directory is safe ($CLONE_DIR)"
+# Related to https://github.com/cpina/github-action-push-to-another-repository/issues/64
+git config --global --add safe.directory /github/workspace
+git config --global --add safe.directory "$CLONE_DIR"
+
 # Setup git
 git config --global user.email "$USER_EMAIL"
 git config --global user.name "$USER_NAME"
@@ -139,10 +144,6 @@ ls -la
 ORIGIN_COMMIT="https://$GITHUB_SERVER/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
 COMMIT_MESSAGE="${COMMIT_MESSAGE/ORIGIN_COMMIT/$ORIGIN_COMMIT}"
 COMMIT_MESSAGE="${COMMIT_MESSAGE/\$GITHUB_REF/$GITHUB_REF}"
-
-echo "[+] Set directory is safe ($CLONE_DIR)"
-# Related to https://github.com/cpina/github-action-push-to-another-repository/issues/64
-git config --global --add safe.directory "$CLONE_DIR"
 
 echo "[+] Switch to the TARGET_BRANCH"
 # || true: if the $TARGET_BRANCH already existed in the destination repo:
