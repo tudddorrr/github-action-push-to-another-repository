@@ -15,7 +15,6 @@ DESTINATION_REPOSITORY_USERNAME="${8}"
 TARGET_BRANCH="${9}"
 COMMIT_MESSAGE="${10}"
 TARGET_DIRECTORY="${11}"
-REMOTE_NAME="${12}"
 
 if [ -z "$DESTINATION_REPOSITORY_USERNAME" ]
 then
@@ -66,9 +65,6 @@ git lfs install
 
 echo "[+] Cloning destination git repository $DESTINATION_REPOSITORY_NAME"
 
-git config --global --add safe.directory /github/workspace
-git config --global --add safe.directory "$CLONE_DIR"
-
 # Setup git
 git config --global user.email "$USER_EMAIL"
 git config --global user.name "$USER_NAME"
@@ -78,6 +74,8 @@ git config --global http.version HTTP/1.1
 
 {
 	git clone --single-branch --depth 1 --branch "$TARGET_BRANCH" "$GIT_CMD_REPOSITORY" "$CLONE_DIR"
+} || {
+	git clone --single-branch --depth 1 "$GIT_CMD_REPOSITORY" "$CLONE_DIR"
 } || {
 	echo "::error::Could not clone the destination repository. Command:"
 	echo "::error::git clone --single-branch --branch $TARGET_BRANCH $GIT_CMD_REPOSITORY $CLONE_DIR"
@@ -142,7 +140,16 @@ ORIGIN_COMMIT="https://$GITHUB_SERVER/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
 COMMIT_MESSAGE="${COMMIT_MESSAGE/ORIGIN_COMMIT/$ORIGIN_COMMIT}"
 COMMIT_MESSAGE="${COMMIT_MESSAGE/\$GITHUB_REF/$GITHUB_REF}"
 
-git checkout "$TARGET_BRANCH" 2>/dev/null || git checkout -b "$TARGET_BRANCH"
+echo "[+] Set directory is safe ($CLONE_DIR)"
+# Related to https://github.com/cpina/github-action-push-to-another-repository/issues/64
+git config --global --add safe.directory "$CLONE_DIR"
+
+echo "[+] Switch to the TARGET_BRANCH"
+# || true: if the $TARGET_BRANCH already existed in the destination repo:
+# it is already the current branch and it cannot be switched to
+# (it's not needed)
+# If the branch did not exist: it switches (creating) the branch
+git switch -c "$TARGET_BRANCH" || true
 
 echo "[+] Adding git commit"
 git add .
@@ -156,4 +163,4 @@ git diff-index --quiet HEAD || git commit --message "$COMMIT_MESSAGE"
 
 echo "[+] Pushing git commit"
 # --set-upstream: sets the branch when pushing to a branch that does not exist
-git push --set-upstream "$REMOTE_NAME" "$TARGET_BRANCH"
+git push "$GIT_CMD_REPOSITORY" --set-upstream "$TARGET_BRANCH"
