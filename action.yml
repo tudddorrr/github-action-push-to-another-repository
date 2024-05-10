@@ -52,7 +52,7 @@ inputs:
     description: '[Optional] The name of the remote to push to'
     default: origin
     required: false
-        
+
 runs:
   using: docker
   image: Dockerfile

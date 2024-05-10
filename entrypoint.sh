@@ -77,7 +77,7 @@ git config --global user.name "$USER_NAME"
 git config --global http.version HTTP/1.1
 
 {
-	git clone "https://$USER_NAME:$API_TOKEN_GITHUB@$GITHUB_SERVER/$DESTINATION_REPOSITORY_USERNAME/$DESTINATION_REPOSITORY_NAME.git" "$CLONE_DIR"
+	git clone --single-branch --depth 1 --branch "$TARGET_BRANCH" "$GIT_CMD_REPOSITORY" "$CLONE_DIR"
 } || {
 	echo "::error::Could not clone the destination repository. Command:"
 	echo "::error::git clone https://$USER_NAME:the_api_token@$GITHUB_SERVER/$DESTINATION_REPOSITORY_USERNAME/$DESTINATION_REPOSITORY_NAME.git $CLONE_DIR"
